@@ -2,7 +2,7 @@ function f = M9_4(x)
     f=prod(x)-min(x);
 end
 
-%clear all;
+%clear all
 %n=5;
 %i=1:n;
 %x1 = i-(n/2+0.5);
