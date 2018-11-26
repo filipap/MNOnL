@@ -8,3 +8,4 @@ end
 %[x,f,e,o] = fminsearch('M9_5',[-1 5],[],w) -> [] significa que é sem
 %opcoes
 %no caso em que w aumenta verifica-se um maior numero de funcCount
+%as outras alineas é so aumentar o w
