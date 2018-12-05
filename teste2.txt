@@ -1,0 +1,378 @@
+==================================== CAPITULO 7 ======================================
+7.1)----------------------------------------------------------------------------------
+
+-----a) Escreva um polinómio de grau 3
+
+xi = [0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4];
+fi = [1.000 1.221 1.492 1.882 2.226 2.718 3.320 4.056];
+
+p = polyfit(xi,fi,3)
+
+--------------------------------------------------------------------------------------
+
+-----b) Determinar aproximação para o ponto x = 0.5, usando o polinómio da alı́nea anterior
+
+f = polyval(p,0.5)
+--------------------------------------------------------------------------------------
+-----c) Determinar o resı́duo do erro
+-> para gerar o residuo do erro tem de se ir buscar o normr a struct do resíduo e elevá-la ao quadrado
+-> residuo = r.normr ^ 2
+
+[~,r] = polyfit(xi,fi,3);
+
+S = r.normr ^ 2 % -> buscar o normr à struct r
+--------------------------------------------------------------------------------------
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+7.3)----------------------------------------------------------------------------------
+
+O problema apresenta algumas funções de aproximação M, N, O, e Q e um polinómio de grau 3 que ainda 
+não conhecemos (p3(x))
+
+-----a) Calcule os coeficientes dos vários modelos (e construa-os) que melhor se ajustam
+à função f(x) dada pela tabela seguinte, no sentido dos mı́nimos quadrados.
+
+x = [-1.00 -0.95 -0.85 -0.80 0.20 0.50 0.90];  
+f = [-1.00 -0.05 0.90 1.00 0.90 0.50 -0.30];     
+isto já é dado no enunciado!!!
+
+
+==== 1º - colocar as funções já definidas numa m-file 
+==== 2º: como neste caso n dava o vetor define-se um vetor com uns (tipo [1 1]) dependendo do número de coeficientes 
+existentes:
+
+Exemplo
+p3(x) -> [p3,r] = polyfit(x,f,3); 
+M -> [c1,r1] = lsqcurvefit('MQ1',[1 1 1],x,f);
+
+--------------------------------------------------------------------------------------
+-----b) Estime f (0.6) para cada um deles
+
+==== Para os polinómios já definidos:
+Exemplo:
+l = M(c1,0.6)
+==== Para os que não se sabe:
+Exemplo:
+[p3,r] = polyfit(x,f,3);
+v3 = polyval(p3,0.6)
+--------------------------------------------------------------------------------------
+-----c) Indique o resı́duo para cada um dos modelos.
+==== Para os polinómios já definidos:
+Exemplo:
+[c1,r1] = lsqcurvefit('MQ1',[1 1 1],x,f);
+S1 = r1
+
+==== Para os que não se sabe:
+Exemplo:
+[p3,r] = polyfit(x,f,3);
+S = r.normr ^ 2
+---------------------------------------------------------------------------------------
+-----d) Qual dos modelos é melhor, no sentido dos mı́nimos quadrados? Justifique.
+
+Para determinar o melhor modelo tem de se analisar o resíduo de cada um dos polinómios
+
+-> Quanto mais reduzido for o resíduo do polinómio melhor é, no sentido dos
+métodos quadrados. 
+---------------------------------------------------------------------------------------
+
+
+==================================== CAPITULO 8 ======================================
+
+[xmin,fmin,exitflag,output] = fminunc(’func’,x0,options)
+
+xmin -> minimizante
+
+fmin -> o valor mínimo da função
+
+exitflag -> define a forma como parou o algoritmo (a desejável é 1 - significa que o
+processo convergiu para um ponto estacionário)
+
+output -> informação sobre o processo iterativo (número de iterações, número de 
+cálculos da função, algoritmo usado)
+
+’func’ -> m-file com a função a ser minimizada
+
+x0 -> valor inicial
+
+options -> opções a serem alteradas quando pedem
+--------------------------------------------------------------------------------------
+
+8.1) Resolva o problema:
+
+	min f (x) ≡ 0.25*x(1)^4 − 0.5*x(1)^2 + 0.1*x(1) + 0.5*x(2)^2 ,
+
+-----a)usando o método quasi-Newton sem fornecer as primeiras derivadas da função
+objectivo.
+1º -> define-se uma m-file com a function:
+
+function f = m8_1(x)
+   f = 0.25*x(1)^4 - 0.5*x(1)^2 + 0.1*x(1) + 0.5*x(2)^2;
+end
+
+2º -> na janela de comandos:
+
+[x,f,exitflag,output] = fminunc('m81',[-1,0.5]) -> é uma função diferenciável
+
+--------------------------------------------------------------------------------------
+
+8.2) Quando dao constantes já definidas (a e b)
+
+-----a)Resolva o problema usando o método quasi-Newton sem fornecer as primeiras
+derivadas da função objectivo. Considere a aproximação inicial (1, 1).
+
+1º -> define-se uma m-file com a function:
+function f = m8_2(x)
+   a = [3 4 1];
+   b = [1.2 1.5 1];
+   p = a(1)*(1-exp(-b(1)*x(1))) + a(2)*(1-exp(-b(2)*x(2))) + a(3)*(1-exp(-b(3)*x(1)*x(2)))-x(1)-x(2);
+   f=-p;	
+end
+
+2º -> na janela de comandos:
+clear all
+x1 = [1 1]; 
+[x,f,e,o] = fminunc('m8_1',x1)
+
+
+--------------------------------------------------------------------------------------
+
+8.3) Suponha que pretendia representar um número positivo A na forma de um produto
+de quatro factores positivos x1, x2, x3, x4. Para A = 2401, determine esses factores
+de tal forma que a sua soma seja a menor possı́vel.
+Formule o problema como um problema de optimização sem restrições em função
+das três variáveis x1, x2 e x3.
+
+A partir da aproximação inicial (x1, x2, x3)^(1) = (6, 7, 5), use o método quasi-Newton
+(com fórmula DFP), para calcular esses factores. Na paragem do processo iterativo
+use TolX=TolFun=0.0001.
+
+1º -> define-se uma m-file com a function:
+Nota: como pede para formular em função das três variaveis x1, x2 e x3 apenas se usam essas 
+variáveis.
+
+function f = m8_3(x)
+    f = (x(1)+x(2)*x(3)+2401)/(x(1)*x(2)*x(3));
+end 
+
+
+2º -> na janela de comandos:
+
+clear all 
+x1 = [6 7 5];
+options = optimset('TolX',0.001,'TolFun'0.0001,'HessUpdate','dfp'); % -> pois por defeito ele faz BFGS
+[x,f,e,o] = fminunc('m8_1',x1,options) 
+
+--------------------------------------------------------------------------------------
+
+8.4) a função a minimizar ja é dada
+
+Pelo método quasi-Newton (sem fornecer derivadas)
+para n = 5 e para n = 10, determinar o mínimo.
+Considere θ = 6 , m = 10 e o valor inicial x = 2 para i = 1,3,5,7..
+e x=1 para i = 0,2,4,6,...
+
+1º -> define-se uma m-file com a function:
+function f = m8_4(x,t,m) %tem de se inserir os parametros t e m
+    n = length(x); % da o tamanho do vetor
+    i = 1:2:n-1; %todos os impares excluindo n
+    y(i) = x(i)*cos(t)-x(i+1)*sin(t);
+    i = 2:2:n-1; %todos os pares excluindo n
+    y(i) = x(i)*sin(t)-x(i+1)*cos(t);
+    i=n;
+    y(i) = x(i);
+    i = 1:n;
+    f = -sum(sin(y).*((sin(i.*y.^2/pi)).^(2*m)));
+end 
+
+2º -> na janela de comandos:
+clear all 
+n=10;
+i = 1:2:n;
+x1(i)=2;
+i = 2:2:n;
+x1(i)=1;
+t = pi/6;
+m=10;
+[x,f,e,o] = fminunc('m8_4',x1,[],t,m) -> [] quer dizer que é sem options
+
+---------------------------------------------------------------------------------------
+
+8.5) a função a minimizar ja é dada. Com formula DFP!
+
+Resolva-o pelo método quasi-Newton com fórmula DFP para n = 10 e n = 25.
+Considere o valor inicial x (1) = (1, 1, . . . , 1)^T.
+
+
+1º -> define-se uma m-file com a function:
+function f = m8_5(x)
+    n = length(x);
+    i = 1:n;
+    f = 1+1/4000*sum(x.^2)-prod(cos(x./sqrt(i)));
+end 
+
+2º-> na janela de comandos:
+
+clear all 
+n=10;
+options = optimset('HessUpdate','DFP');
+x1 = ones(1,n);
+[x,f,e,o] = fminunc('m8_4',x1,options)
+----------------------------------------------------------------------------------------
+
+
+==================================== CAPITULO 9 =======================================
+
+[xmin,fmin,exitflag,output] = fminsearch(’func’,x0,options)
+
+A DIEFERNÇA ENTRE A fminsearch E A fminunc É: 
+-> A fminunc  É ADEQUADO PARA FUNÇÕES DIFERENCIÁVEIS!!!
+-> A fmisearch É ADEQUADO PARA FUNÇÕES NÃO DIFERENCIÁVEIS!!!
+
+xmin -> minimizante
+
+fmin -> o valor mínimo da função
+
+exitflag -> define a forma como parou o algoritmo (a desejável é 1 - significa que o
+processo convergiu para um ponto estacionário)
+
+output -> informação sobre o processo iterativo (número de iterações, número de 
+cálculos da função, algoritmo usado)
+
+’func’ -> m-file com a função a ser minimizada
+
+x0 -> valor inicial
+
+options -> opções a serem alteradas quando pedem
+----------------------------------------------------------------------------------------
+
+9.1) Resolver o problema, com f (x1 , x2) = max{|x1|,|x2 − 1|}. 
+Como aproximação inicial considere o ponto (1, 1).
+
+1º -> define-se uma m-file com a function:
+function f = M9_1(x)
+    u=[abs(x(1)) abs(x(2)-1)];  
+    f=max(u);
+end
+
+2º-> na janela de comandos:
+clear all
+options=optimset('Display','iter');
+[x,f,e,o] = fminsearch('M9_1',[1 1], options)
+-----------------------------------------------------------------------------------------
+9.2) A partir da aproximação inicial x = (1, −0.1) T , calcule a solução, usando o método
+mais adequado:
+min f(x) = max{x(1)^2+x(2)^2 (2-x(1))^2+(2-x(2))^2 2*exp(-x(1)+x(2))}.
+
+1º -> define-se uma m-file com a function:
+function f = M9_2(x)
+    u=[x(1)^2+x(2)^2 (2-x(1))^2+(2-x(2))^2 2*exp(-x(1)+x(2))];  
+    f=max(u);
+end
+
+2º-> na janela de comandos:
+
+clear all
+options=optimset('Display','iter');
+[x,f,e,o] = fminsearch('M9_2',[1 -0.1], options)
+[x,f,e,o] = fminsearch('M9_2',[2 2], options) -> da menos cálculos de função logo é a 
+melhor solução!!!
+
+-----------------------------------------------------------------------------------------
+9.3) Considere o seguinte problema não diferenciável
+
+Para n = 2 e a partir da aproximação inicial xi= i−((n/2) + 0.5), i = 1,...,n, calcule
+a solução.
+Repita a resolução considerando agora n = 5 e TolX= 10^−20.
+
+1º -> define-se uma m-file com a function:
+
+function f = M9_3(x)
+    n = length(x);
+    f=n*max(x)-sum(x);
+end
+
+2º-> na janela de comandos:
+
+clear all
+options = optimset('TolX',1e-20);
+n=5;
+i=1:n;
+x1 = i-(n/2+0.5);
+[x,f,e,o] = fminsearch('M9_3',x1,options)
+
+-----------------------------------------------------------------------------------------
+9.4) Considere o seguinte problema não diferenciável
+a) Para n = 2 e a partir da aproximação inicial x i = i −((n/2) + 0.5), i = 1, . . . , n, calcule
+a solução.
+b) Repita a resolução considerando agora n = 5 e MaxFunEvals= 5000.
+
+1º -> define-se uma m-file com a function:
+
+function f = M9_4(x)
+    f=prod(x)-min(x);
+end
+
+
+2º-> na janela de comandos:
+
+clear all
+n=5;
+i=1:n;
+x1 = i-(n/2+0.5);
+a) -> [x,f,e,o] = fminsearch('M9_4',x1)
+
+
+options = optimset('MaxFunEvals',5000); % -> para limitar o numero de iteraçoes 
+ -> em matlab o predefinido é 1000
+b) -> [x,f,e,o] = fminsearch('M9_4',x1,options)
+
+-----------------------------------------------------------------------------------------
+9.5) Considere o seguinte problema não diferenciável.
+A partir da aproximação inicial x = (−1,5)^T , calcule a solução, usando o método
+mais adequado e considerando w = 500. A partir da mesma aproximação inicial,
+volte a resolver o problema, mas agora fazendo w = 1000.
+
+1º -> define-se uma m-file com a function:
+
+function f = M9_5(x,w)
+    u=[x(1)^2+x(2)^2 x(1)^2+x(2)^2+w*(-4*x(1)-x(2)+4) x(1)^2+x(2)^2+w*(-x(1)-2*x(2)+6)];
+    f=max(u);
+end
+
+2º-> na janela de comandos:
+
+clear all
+w=500;
+[x,f,e,o] = fminsearch('M9_5',[-1 5],[],w) -> [] significa que é sem opcoes
+
+NOTA: no caso em que w aumenta verifica-se um maior numero de funcCount
+as outras alineas é so aumentar o w.
+
+-----------------------------------------------------------------------------------------
+9.6) Considere o seguinte problema não diferenciável:
+	f=max(abs(u));
+em que:
+
+ui(x) = x(4)-(x(1)*t.^2+x(2)*t+x(3)).^2-sqrt(t) 
+	para 1 ≤ i ≤ 21
+
+A partir da aproximação inicial xi = 1, i = 1,...,4, calcule a solução, usando o
+método mais adequado e os seguintes valores ti = 0.25+0.75*(i−1)/20, i = 1,...,21.
+
+1º -> define-se uma m-file com a function:
+
+function f = M9_6(x)
+    i=1:21;
+    t = 0.25+0.75*(i-1)/20;
+    u=x(4)-(x(1)*t.^2+x(2)*t+x(3)).^2-sqrt(t);
+    f=max(abs(u));
+end
+
+
+2º-> na janela de comandos:
+
+clear all
+[x,f,e,o] = fminsearch('M9_6',ones(1,4))
+
+==================================== FIM =================================================
